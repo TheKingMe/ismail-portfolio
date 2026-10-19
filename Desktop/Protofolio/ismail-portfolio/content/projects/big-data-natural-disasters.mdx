@@ -1,0 +1,44 @@
+---
+title: "Big Data Analytics Platform (Natural Disasters)"
+date: "2024-06-15"
+description: "A distributed big data pipeline and analytics platform designed to process, store, and analyze large-scale geospatial datasets related to global natural disasters."
+techStack:
+  - "PySpark"
+  - "Apache Iceberg"
+  - "Apache Airflow"
+  - "Trino"
+  - "Apache Superset"
+category: "Data Engineering & Cloud Infrastructure"
+featuredImage: "/projects/disaster-data-hero.png"
+---
+
+## The Goal
+
+Global seismic, meteorological, and geospatial sensors produce massive volumes of high-velocity event telemetry during natural disaster emergencies (earthquakes, cyclones, floods). Traditional relational databases buckle under the write volume and fail to support ad-hoc spatial-temporal analytical queries. The goal of this project was to design and deploy an open lakehouse architecture capable of batch and micro-batch ingestion, scalable time-travel queries, and interactive emergency dispatch visualization dashboards.
+
+## Key Features
+
+- **Automated Workflow Orchestration**: Directed Acyclic Graphs (DAGs) in Apache Airflow scheduling nightly ETL transformations, sensor schema validations, and anomaly alerting.
+- **Distributed PySpark Processing**: Multi-node data transformation pipelines parsing raw geospatial GeoJSON, NetCDF, and CSV data lakes into optimized columnar formats.
+- **Open Lakehouse Storage with Apache Iceberg**: ACID transaction guarantees, schema evolution without table rewrites, and snapshot-based time-travel analysis.
+- **Interactive SQL Telemetry with Trino**: High-concurrency distributed query engine enabling sub-second analytical queries across multi-terabyte datasets.
+- **Geospatial Analytics in Apache Superset**: Executive dashboards displaying heatmaps, disaster impact radius estimates, and infrastructure risk metrics.
+
+## Tech Stack
+
+- **Data Processing**: PySpark, Python 3
+- **Table Format & Storage**: Apache Iceberg, MinIO / S3 Object Storage, Apache Parquet
+- **Workflow Orchestration**: Apache Airflow 2
+- **Distributed Query Engine**: Trino (formerly PrestoSQL)
+- **Visualization & BI**: Apache Superset
+
+## The Engineering Challenge
+
+### Mitigating the Small-File Problem & Enforcing ACID Consistency Across Streaming Telemetry
+
+Natural disaster telemetry feeds deliver data in rapid, micro-batch bursts (e.g., thousands of tiny 50KB JSON payloads containing sensor readings). In distributed object stores like S3/MinIO, persisting millions of tiny Parquet files drastically degrades query performance due to metadata bloat, excessive HTTP GET calls, and partition scan overhead in distributed query engines like Trino.
+
+To achieve high ingestion velocity while keeping analytical queries blazing fast:
+1. **Compaction Strategy with Apache Iceberg**: Implemented automated Airflow maintenance DAGs executing asynchronous Iceberg data file bin-packing (`rewriteDataFiles`). This merged thousands of small micro-batch files into uniform 128MB Parquet chunks without blocking active read queries.
+2. **Hidden Partitioning by Temporal & Geospatial Buckets**: Utilized Iceberg's hidden partitioning capabilities (partitioning by `days(event_time)` and bucketed geospatial coordinates), eliminating the need for query analysts to manually provide partition filters while preventing partition drift.
+3. **Partition Pruning & Metadata Caching in Trino**: Tuned Trino's Iceberg connector with cost-based optimization (CBO) and column statistics (min/max bounds in Parquet metadata), allowing queries filtering disaster epicenters to skip 92% of unreferenced data files.

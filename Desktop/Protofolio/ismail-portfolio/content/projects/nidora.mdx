@@ -1,0 +1,41 @@
+---
+title: "NIDORA: B2C Family Management App"
+date: "2024-11-20"
+description: "An interactive family management web app designed to synchronize household logistics, shared checklists, and emergency data using dual-user profiles."
+techStack:
+  - "React"
+  - "Next.js"
+  - "Tailwind CSS"
+category: "Full-Stack SaaS & Web Apps"
+featuredImage: "/projects/nidora-hero.png"
+---
+
+## The Goal
+
+Modern households struggle with fragmented communication across scattered chat threads, forgotten grocery notes, and inaccessible emergency medical details. NIDORA was created to provide a unified, privacy-first domestic coordination platform. The core objective was building an intuitive web experience that accommodates both tech-savvy parents (guardians) and dependent children or elderly members through dual-user profile views with context-aware access controls.
+
+## Key Features
+
+- **Dual-User Profile Architecture**: Instant role switching between Guardian (administrative oversight, budget limits, private health vaults) and Dependent (simplified chore checklists, emergency call triggers, activity feeds).
+- **Synchronized Real-Time Checklists**: Live household task coordination with instant optimistic updates, recurring schedules, and gamified completion rewards.
+- **Encrypted Emergency & Medical Ledger**: Centralized repository for blood types, pediatric allergy protocols, pediatrician contacts, and insurance documents.
+- **Family Calendar & Milestone Sync**: Unified domestic scheduling board preventing double-booking of appointments, school events, and extracurriculars.
+- **Mobile-First Responsive Interface**: Ergonomic, thumb-friendly layout built with Tailwind CSS, optimized for rapid one-handed inputs on smartphones and tablets.
+
+## Tech Stack
+
+- **Framework**: Next.js (App Router, Server Components)
+- **UI Library**: React 18, Framer Motion for responsive micro-interactions
+- **Styling**: Tailwind CSS with custom theme tokens and responsive layouts
+- **State Management & Data**: Client Context API, React Query with local storage caching
+
+## The Engineering Challenge
+
+### Client-Side State Isolation Across Dual-User Profiles & Offline Reconciliation
+
+Because guardians and dependents often share a single household tablet or switch profiles rapidly on the same mobile device, the application needed to guarantee strict client-side data isolation. Sensitive parental notes, budget entries, and private medical documents could never leak into the dependent view through stale React state or cached DOM nodes.
+
+We engineered a robust client-side role sandbox:
+1. **Scoped State Tree Isolation**: Implemented a higher-order Context Provider that completely flushes and rebuilds the active in-memory state tree upon persona switching, purging unencrypted local storage keys belonging to guardian scopes.
+2. **Optimistic UI with Conflict Resolution**: Engineered an optimistic state update layer for household checklists. When multiple family members checked off items concurrently in poor mobile connectivity zones, the local state engine resolved conflicts using vector-clock sequence counters rather than naive last-write-wins timestamps.
+3. **Responsive Performance Optimization**: Leveraged Next.js Server Components to stream static family dashboard shells while deferring dynamic widget hydration, achieving a sub-100ms Time-to-Interactive (TTI) on entry-level mobile devices.

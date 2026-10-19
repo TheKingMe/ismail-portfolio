@@ -1,0 +1,42 @@
+---
+title: "Laravel E-Learning Platform"
+date: "2023-10-18"
+description: "A custom freelance educational portal developed with PHP and Laravel, featuring structured curriculum builders, student progress tracking, and secure course access control."
+techStack:
+  - "PHP"
+  - "Laravel"
+  - "HTML/CSS"
+  - "MySQL"
+category: "Freelance & Digital Business"
+featuredImage: "/projects/laravel-elearning-hero.png"
+---
+
+## The Goal
+
+A private educational client required a bespoke learning management system to sell video courses, conduct student evaluations, and manage instructor payouts without the exorbitant monthly subscription fees of proprietary SaaS platforms like Teachable or Kajabi. The project demanded complete ownership of student data, a lightweight and responsive web experience for users in low-bandwidth regions, and custom certificate issuance upon course completion.
+
+## Key Features
+
+- **Instructor Curriculum Builder**: Drag-and-drop course module designer supporting video lessons, downloadable PDF resources, and interactive quizzes.
+- **Dedicated Student Dashboard**: Personalized learning center tracking lesson completion percentages, quiz scores, and downloadable completion certificates.
+- **Role-Based Authentication & Guard System**: Distinct authorization guards separating Students, Instructors, and Platform Administrators using Laravel Gates and Policies.
+- **Automated Digital Certificate Generation**: Server-side PDF rendering of tamper-resistant certificates featuring unique verification hashes.
+- **Student Evaluation & Quiz Engine**: Automated grading algorithms for multiple-choice questions with configurable passing scores and retake limits.
+
+## Tech Stack
+
+- **Backend Framework**: PHP 8.1, Laravel Framework (Eloquent ORM, Blade Templating, Queues)
+- **Frontend**: Blade Components, Vanilla JavaScript, Responsive Custom CSS
+- **Database**: MySQL 8.0 with InnoDB relational constraints
+- **PDF Generation**: DomPDF / Snappy for certificate compilation
+
+## The Engineering Challenge
+
+### Preventing Unauthorized Media Hotlinking & Scaling Granular Course Progress Tracking
+
+The client's primary concern was digital piracy: unauthorized students inspecting browser network requests to extract raw video URLs and sharing them publicly, bypassing paid paywalls. Furthermore, as hundreds of students watched lessons simultaneously, sending frequent progress heartbeats created high write pressure on the MySQL database.
+
+We solved both technical challenges within Laravel's native ecosystem:
+1. **Signed Ephemeral Media Streaming via Secure Middleware**: Rather than exposing static video links, all video requests were routed through a dedicated streaming controller protected by Laravel signed URLs with 15-minute expirations. The controller validated active student enrollment before serving video byte ranges using HTTP 206 Partial Content responses, preventing direct download scraping.
+2. **Debounced Progress Write Queueing**: To avoid locking MySQL rows on every 5 seconds of video playback, student watch progress was debounced client-side and dispatched as asynchronous queue jobs (`Redis/Database Queues`), consolidating updates into batch database writes every 60 seconds.
+3. **Polymorphic Content Modeling**: Structured diverse curriculum items (videos, quizzes, text assignments) using Eloquent polymorphic relationships (`curriculumable`), allowing instructors to reorder heterogeneous lesson types within a single database table structure.

@@ -1,0 +1,44 @@
+---
+title: "Digital E-Commerce Operations & Ad Management"
+date: "2024-08-30"
+description: "End-to-end digital storefront creation, technical conversion rate optimization, and Meta Ads performance marketing for brands including Yescherie, Boutique Hidaya, and Qumashique."
+techStack:
+  - "Shopify"
+  - "YouCan"
+  - "Meta Ads Manager"
+  - "Pixel Tracking"
+  - "Canva"
+  - "CapCut"
+category: "Freelance & Digital Business"
+featuredImage: "/projects/ecommerce-ads-hero.png"
+---
+
+## The Goal
+
+Direct-to-Consumer (DTC) fashion and lifestyle brands in competitive regional markets (Yescherie, Boutique Hidaya, Qumashique) faced severe advertising signal loss, bloated storefront loading times, and declining returns on ad spend (ROAS). The objective was to combine technical frontend engineering with performance digital marketing: re-architecting their storefront checkout funnels for instant mobile speeds, deploying server-side Meta event tracking, and running creative testing frameworks that profitably scaled customer acquisition.
+
+## Key Features
+
+- **Tailored Headless & Liquid Storefronts**: Custom theme development across Shopify and YouCan platforms stripped of render-blocking JavaScript and redundant apps.
+- **Frictionless 1-Click COD Checkout Funnels**: High-converting checkout modals built specifically for Moroccan and Middle Eastern buyers, bypassing lengthy address forms.
+- **Full-Funnel Meta Advertising Strategy**: Prospecting, retargeting, and lookalike audience campaigns managed in Meta Ads Manager with dynamic budget optimization (CBO/ABO).
+- **Video Creative Production Pipeline**: Rapid video editing and creative asset production utilizing CapCut and Canva tailored for high-hook-rate Reels and TikTok placements.
+- **Server-Side Meta Conversions API (CAPI)**: Redundant event tracking sending purchase and checkout telemetry directly from server webhooks to overcome client-side ad blockers.
+
+## Tech Stack
+
+- **E-Commerce Platforms**: Shopify (Liquid, Storefront API), YouCan E-Com
+- **Ad & Marketing Stack**: Meta Ads Manager, Meta Business Suite, Google Analytics 4
+- **Tracking & Attribution**: Meta Conversions API (CAPI), Facebook Pixel, Server Webhooks
+- **Creative & Production**: CapCut, Canva Pro, Figma
+
+## The Engineering Challenge
+
+### Overcoming iOS 14.5+ Ad Signal Decay via Server-Side CAPI Deduplication
+
+Following Apple's App Tracking Transparency (ATT) framework and increasing browser ad-blocker usage, standard browser-side Facebook Pixels were missing up to 35% of checkout conversion events. This blind spot severely degraded Meta's algorithmic bidding, leading to artificially inflated Customer Acquisition Costs (CAC) and misattributed campaign spend.
+
+We engineered an ironclad dual-tracking telemetry pipeline:
+1. **Redundant Dual-Channel Ingestion**: Deployed a hybrid tracking setup where standard client-side browser pixel events fired in tandem with server-side Meta Conversions API (CAPI) events triggered via webhooks upon order creation.
+2. **Deterministic Event Deduplication**: Generated unique, cryptographically seeded `event_id` hashes shared across both client DOM events and backend webhook payloads. This allowed Meta's ingestion servers to deduplicate events reliably, elevating the Event Quality Match Score from 5.4/10 to 9.2/10.
+3. **Storefront Speed Optimization**: Purged 14 legacy tracking scripts and replaced them with asynchronous Google Tag Manager triggers. Minified CSS assets, lazy-loaded off-screen product imagery, and reduced First Contentful Paint (FCP) from 4.8s down to 1.1s, directly lifting checkout conversion rate by 180 basis points.

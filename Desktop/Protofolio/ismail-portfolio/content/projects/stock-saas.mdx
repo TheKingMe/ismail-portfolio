@@ -1,0 +1,47 @@
+---
+title: "StockSaaS: B2B E-Commerce SaaS Platform"
+date: "2025-05-10"
+description: "A comprehensive web-based inventory, order tracking, invoice, and credit management platform built for Moroccan e-commerce sellers operating Cash-on-Delivery models."
+techStack:
+  - "Node.js"
+  - "Express"
+  - "Next.js"
+  - "Tailwind CSS"
+  - "PostgreSQL"
+  - "Docker"
+  - "AWS (Amplify, Cognito, S3)"
+category: "Full-Stack SaaS & Web Apps"
+featuredImage: "/projects/stocksaas-hero.png"
+liveUrl: "https://stocksaas.vercel.app"
+githubUrl: "https://github.com/TheKingMe/stocksaas"
+---
+
+## The Goal
+
+To build a purpose-engineered B2B operations platform tailored for the unique dynamics of the Moroccan e-commerce ecosystem. Most international ERP systems fail to accommodate local Cash-on-Delivery (COD) cash flows, manual WhatsApp order intake, multi-courier package reconciliation, and informal customer credit lines. StockSaaS was conceived to unify SKU inventory tracking, automated fiscal PDF invoicing in Moroccan Dirhams (MAD), and courier webhook ingestion into a resilient single pane of glass.
+
+## Key Features
+
+- **Multi-Store SKU Inventory Management**: Real-time SKU tracking with centralized inventory reservation across multiple Shopify and YouCan storefronts.
+- **Automated MAD Fiscal Invoicing & Batch Generation**: 1-click generation of localized tax invoices, packing manifests, and barcode shipping labels formatted for warehouse label printers.
+- **Carrier Reconciliation & Tracking Dispatch**: Direct API webhooks with Moroccan logistics couriers (Amana, Cathedis, Ozone) for live tracking of Delivered, Returned, and In-Transit parcels.
+- **Merchant Credit & COD Cashflow Balances**: Ledger system tracking courier remittance payments, customer credit accounts, and return fees to prevent revenue bleed.
+- **Secure Multi-Tenant Cloud Architecture**: Enterprise user identity via AWS Cognito, assets stored in private AWS S3 buckets with pre-signed URLs, and continuous deployment via Docker and AWS Amplify.
+
+## Tech Stack
+
+- **Frontend & App Layer**: Next.js 14, React, Tailwind CSS, AWS Amplify
+- **Backend Services**: Node.js, Express.js (RESTful microservices), Prisma ORM
+- **Database**: PostgreSQL with connection pooling (PgBouncer)
+- **Cloud Infrastructure**: AWS Cognito (RBAC Auth), AWS S3 (Encrypted Document Archiving), Docker Containers
+
+## The Engineering Challenge
+
+### Pessimistic Concurrency Control Under Flash-Sale Webhook Bursts
+
+During peak seasonal promotions and influencer marketing pushes, merchant stores experience surges of hundreds of concurrent order webhooks within seconds. Because sellers advertise the same inventory SKU across YouCan, Shopify, and manual WhatsApp phone lines simultaneously, simple read-then-write database operations led to severe race conditions, negative inventory counts, and overselling penalties.
+
+To guarantee zero-oversell accuracy without degrading API response throughput:
+1. **Pessimistic Row-Level Locking**: Engineered an atomic reservation engine using PostgreSQL `SELECT ... FOR UPDATE` row locks inside transaction blocks, preventing concurrent transactions from mutating quantity fields until the active reservation completes.
+2. **Idempotent Webhook Queueing**: Implemented an idempotency hash layer based on store source and external order ID to automatically deduplicate re-delivered webhook payloads from courier and storefront webhooks.
+3. **Async Streaming PDF Invoicing**: Offloaded heavy PDF rendering to a worker process utilizing memory-efficient streams piped directly to AWS S3, reducing API event loop blocking from 1,200ms to under 45ms per batch.

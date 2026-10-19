@@ -1,0 +1,39 @@
+---
+title: "Biometric Identification & Classification System"
+date: "2024-01-25"
+description: "A biometric identification and pattern recognition system developed in MATLAB utilizing mathematical feature extraction models and fuzzy inference engines."
+techStack:
+  - "MATLAB"
+  - "Fuzzy Logic"
+category: "AI, Hardware & Academic Research"
+featuredImage: "/projects/biometric-system-hero.png"
+---
+
+## The Goal
+
+Traditional biometric authentication algorithms rely on rigid, deterministic thresholding that frequently fails under real-world ambiguities such as poor sensor illumination, partial occlusions, skin elasticity distortion, and acoustic background noise. The objective of this academic research project was to engineer a robust biometric pattern classifier in MATLAB applying fuzzy set theory, enabling accurate human verification in the presence of imprecise, non-linear biometric feature vectors.
+
+## Key Features
+
+- **Multi-Stage Feature Extraction Pipeline**: Preprocessing algorithms incorporating histogram equalization, adaptive Gaussian noise filtering, and edge contrast normalization.
+- **Fuzzy Inference Engine (FIS)**: Mamdani and Sugeno fuzzy reasoning models mapping multidimensional biometric inputs to confidence membership distributions.
+- **Configurable Linguistic Rule Base**: Expert rule matrix encoding non-linear biometric relationships (e.g., IF minutiae proximity is Moderate AND ridge orientation variance is Low THEN match probability is High).
+- **ROC & Error Rate Evaluation Suite**: Comprehensive performance benchmarking calculating False Acceptance Rates (FAR), False Rejection Rates (FRR), and Equal Error Rates (EER).
+- **Interactive MATLAB Visualization GUI**: Analytical interface displaying membership curve geometry, feature space clustering, and classification decision surfaces.
+
+## Tech Stack
+
+- **Modeling & Numerical Analysis**: MATLAB R2023b
+- **Toolboxes**: Fuzzy Logic Toolbox, Image Processing Toolbox, Statistics and Machine Learning Toolbox
+- **Mathematical Formulations**: Mamdani Fuzzy Inference, Centroid Defuzzification, Mahalanobis Distance Metrics
+
+## The Engineering Challenge
+
+### Overcoming High False Rejection Rates Caused by Noisy Input Variance Without Incurring False Acceptance Vulnerabilities
+
+In biometric verification, tuning an algorithm to be tolerant of sensor noise typically widens acceptance boundaries, causing dangerous False Acceptance Rates (FAR) where impostors are misclassified as genuine users. Conversely, overly strict boundaries lead to high False Rejection Rates (FRR), frustrating legitimate users due to minor ambient lighting changes or sensor placement angles.
+
+We tackled this optimization challenge through mathematical calibration:
+1. **Adaptive Membership Function Calibration**: Replaced static triangular membership functions with asymmetric generalized bell-shaped and Gaussian membership functions. The parameters ($\sigma, c$) were mathematically optimized against empirical test distributions to accurately reflect sensor variance.
+2. **Defuzzification via Centroid Area Formulation**: Evaluated multiple defuzzification algorithms (Bisector, Middle of Maximum, Centroid). The Centroid method proved superior by producing continuous, smooth output surfaces that avoided abrupt classification flips at the boundaries between linguistic terms.
+3. **EER Optimization**: Through rigorous testing against standard benchmark biometric sample databases, the fuzzy inference system achieved an Equal Error Rate (EER) of under 2.8%, demonstrating significantly greater tolerance to noise than classical Euclidean distance thresholds.

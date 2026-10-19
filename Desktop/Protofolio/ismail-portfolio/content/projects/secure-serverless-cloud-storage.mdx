@@ -1,0 +1,43 @@
+---
+title: "Secure Serverless Cloud Storage Application"
+date: "2024-03-10"
+description: "A secure, zero-server cloud storage platform built with Next.js, AWS S3 pre-signed upload pipelines, and event-driven AWS serverless functions."
+techStack:
+  - "Next.js"
+  - "AWS S3"
+  - "AWS Lambda"
+  - "AWS API Gateway"
+  - "Tailwind CSS"
+category: "Data Engineering & Cloud Infrastructure"
+featuredImage: "/projects/cloud-storage-hero.png"
+---
+
+## The Goal
+
+Traditional web storage portals route heavy binary file uploads directly through application server containers, leading to severe memory consumption, bandwidth saturation, and scalability bottlenecks. The objective of this project was to engineer a fully serverless, zero-maintenance storage architecture. Users can securely upload, organize, preview, and share multi-gigabyte files directly with cloud object storage while enforcing strict client-side encryption and fine-grained access policies.
+
+## Key Features
+
+- **Direct-to-S3 Pre-Signed Upload Pipeline**: Client browsers upload directly to Amazon S3 without routing binary payloads through intermediate backend servers.
+- **Chunked Multipart Uploads**: Automatic chunking for files larger than 100MB with pause, resume, and retry capabilities for unstable network connections.
+- **Client-Side SHA-256 Checksum Verification**: Cryptographic validation guaranteeing data integrity against corruption or man-in-the-middle tampering during transit.
+- **Ephemeral Share Links with Expiration**: Generate secure, time-limited pre-signed download URLs with configurable download limits and password protection.
+- **Event-Driven Metadata Processing**: AWS Lambda triggers on `s3:ObjectCreated` events to generate image thumbnails, extract document metadata, and log audit trails.
+
+## Tech Stack
+
+- **Frontend Application**: Next.js (App Router), React, Tailwind CSS
+- **Cloud Storage**: Amazon S3 (Lifecycle rules, KMS Server-Side Encryption)
+- **Compute & Serverless**: AWS Lambda (Node.js runtime), AWS API Gateway
+- **Security & IAM**: AWS IAM least-privilege policies, CORS configuration
+
+## The Engineering Challenge
+
+### Handling Large Multi-Part Uploads Directly from the Browser Without Compromising Security
+
+Allowing web browsers to upload directly to Amazon S3 requires opening fine-grained permissions without leaking AWS IAM access keys or permitting unauthorized users to overwrite existing storage buckets. Furthermore, uploading single multi-gigabyte files over browser HTTP connections frequently fails mid-transfer due to timeouts or temporary packet loss.
+
+We architected a serverless upload handshake:
+1. **Two-Stage Pre-Signed Multipart Handshake**: Designed a Lambda-backed API Gateway endpoint where the browser initiates a transfer request by specifying file size and MIME type. The Lambda function authorizes the JWT, generates a unique S3 upload ID, and returns an array of signed part URLs.
+2. **Concurrent Parallel Chunk Uploads**: Engineered a custom browser upload manager in TypeScript that splits large binaries into 10MB chunks, transmitting up to 4 parts concurrently using `Promise.all` with exponential backoff retry.
+3. **Automated Serverless Assembly & Cleanup**: Upon uploading the final part, a completion Lambda verifies all part ETags and assembles the file into a unified S3 object. An S3 lifecycle rule automatically aborts incomplete multipart uploads after 24 hours, preventing phantom storage fees.

@@ -1,0 +1,43 @@
+---
+title: "Embedded Systems & IoT Automation"
+date: "2023-12-10"
+description: "Hardware circuit design, firmware programming in Embedded C, and Proteus simulation for RFID security access, thermal monitoring, and automated actuator control."
+techStack:
+  - "Arduino UNO"
+  - "RC522 RFID"
+  - "SG90 servos"
+  - "PIC16F877 microcontrollers"
+  - "Proteus Simulation"
+category: "AI, Hardware & Academic Research"
+featuredImage: "/projects/embedded-iot-hero.png"
+---
+
+## The Goal
+
+To design, breadboard, code, and simulate autonomous embedded hardware systems combining physical security, environmental monitoring, and electromechanical feedback. The project bridged low-level register manipulation on microchip hardware with practical IoT automation, creating a physical access control gate integrating RFID tag authorization, ambient thermal threshold detection, and precise motorized barrier actuation.
+
+## Key Features
+
+- **Contactless RFID Access Control**: High-frequency RFID interrogation using MFRC522 modules operating over SPI, comparing UID keys against an encrypted hardware EEPROM whitelist.
+- **Motorized Barrier Servo Actuation**: Smooth positional control of SG90 micro-servo motors via pulse-width modulation (PWM) to raise and lower physical security gates.
+- **Analog Environmental Sensing**: LM35 / DHT sensor integration with Analog-to-Digital Conversion (ADC) and real-time LCD visual readouts.
+- **Microcontroller Firmware in Embedded C / C++**: Bare-metal programming configuring timers, external hardware interrupts, and serial UART debugging interfaces.
+- **End-to-End Schematic Simulation in Proteus**: Complete virtual circuit design, schematic capture, and logic validation in Proteus VSM before physical PCB assembly.
+
+## Tech Stack
+
+- **Microcontrollers**: Microchip PIC16F877A (8-bit architecture), Atmel ATmega328P (Arduino UNO)
+- **Sensors & Actuators**: MFRC522 RFID Module (13.56 MHz), SG90 Micro Servos, LM35 Temperature Sensor, 16x2 I2C LCD Display
+- **Firmware Development**: Embedded C, MPLAB X IDE, XC8 Compiler, Arduino IDE
+- **Simulation & EDA**: Labcenter Proteus Design Suite
+
+## The Engineering Challenge
+
+### Eliminating Interrupt Jitter & Register Clashing Between SPI RFID Ingestion and Timer-Based PWM Actuation
+
+On resource-constrained 8-bit microcontrollers (such as the PIC16F877A running on a 20MHz crystal oscillator with only 368 bytes of RAM), handling concurrent tasks without a Real-Time Operating System (RTOS) easily causes hardware failure. When polling the MFRC522 RFID reader over high-frequency SPI, long blocking loops or CPU interrupt latency caused severe pulse-width modulation (PWM) signal jitter on the SG90 servo motor lines, resulting in motor stutter, overheating, and missed RFID badge scans.
+
+We solved this through non-blocking asynchronous state machines and dedicated hardware peripherals:
+1. **Interrupt-Driven Hardware SPI Protocol**: Replaced synchronous blocking read routines with an interrupt-driven state machine. When an RFID tag entered the magnetic field, the MFRC522 pulled a hardware interrupt pin (`INT0`), waking the CPU to read the UID buffer without wasting cycles on continuous polling.
+2. **Hardware CCP Timer Integration for Jitter-Free PWM**: Instead of generating software-delayed pulses that distorted whenever SPI code ran, we configured the PIC16F877A's internal `Timer2` and `CCP1` (Capture/Compare/PWM) hardware registers to generate stable 50Hz PWM signals independently of the CPU instruction cycle.
+3. **Brown-Out Protection & Inductive Spike Isolation**: In physical breadboard tests, sudden current draw from the servo motors caused VCC supply voltage dips (brownouts) that reset the microcontroller. Added decoupling capacitors (100uF electrolytic parallel with 0.1uF ceramic) and optical isolation to insulate the sensitive digital logic rails from mechanical motor noise.

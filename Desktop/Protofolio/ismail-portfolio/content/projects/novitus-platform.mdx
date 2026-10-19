@@ -1,0 +1,42 @@
+---
+title: "Novitus: Enterprise LMS Modernization"
+date: "2026-08-15"
+description: "Complete modernization of a legacy Chamilo LMS platform into a modular, full-stack enterprise solution with social hubs, collaborative groups, and an integrated ticketing engine."
+techStack:
+  - "Java"
+  - "Spring Boot 3"
+  - "React"
+  - "PostgreSQL"
+category: "Enterprise & Professional Experience"
+featuredImage: "/projects/novitus-hero.png"
+---
+
+## The Goal
+
+Executed as a Master's Final Year Project (PFE) between February 2026 and August 2026, the primary goal was the complete architectural modernization of an aging, monolithic Chamilo LMS installation. The enterprise required a highly scalable, decoupled web application that transitioned corporate training from passive content consumption into an active, social, and collaborative learning ecosystem while maintaining backward compatibility with historical training records.
+
+## Key Features
+
+- **Enterprise Social Learning Hub**: Activity feeds, structured peer discussion boards, and milestone celebrations to boost user engagement across corporate cohorts.
+- **Real-Time Direct & Channel Messaging**: Low-latency chat infrastructure enabling learners and instructors to communicate synchronously without external tooling.
+- **Collaborative Workspaces & Cohorts**: Role-scoped group spaces equipped with shared document vaults, group assignments, and automated deadline tracking.
+- **Integrated SLA Help Desk & Ticketing**: In-platform ticketing workflow allowing learners to report technical or pedagogical issues, complete with automated triage, status transitions, and instructor SLA metrics.
+- **Stateless Authentication with Spring Security**: JWT-based authentication supporting Role-Based Access Control (RBAC) across SuperAdmins, Instructors, Auditors, and Students.
+
+## Tech Stack
+
+- **Backend**: Java 17, Spring Boot 3 (Spring Web, Spring Security, Spring Data JPA, Spring WebSocket)
+- **Frontend**: React 18, TypeScript, Tailwind CSS, TanStack Query
+- **Database**: PostgreSQL 16 with optimized composite indexing and Flyway database migrations
+- **Tooling & Infrastructure**: Docker, Maven, GitHub Actions CI/CD
+
+## The Engineering Challenge
+
+### Decomposing Legacy Monolithic Schemas & Managing Dual-Write Migration
+
+The Chamilo legacy database contained over 140 tightly coupled relational tables with inconsistent foreign key constraints, denormalized metadata encoded in serialized PHP strings, and mixed character encodings. Refactoring this into a clean, normalized PostgreSQL schema while preventing data corruption during active corporate cohorts required a rigorous multi-stage migration strategy.
+
+We engineered a custom Spring Batch migration pipeline with automated data-scrubbing routines:
+1. **PHP Serialization Decoupler**: Implemented a byte-level parser to unpack serialized PHP session and profile blobs directly into typed JSONB columns in PostgreSQL.
+2. **Schema Isolation & Flyway Versioning**: Re-modeled the persistence tier into discrete domain aggregates (`Identity`, `Curriculum`, `Communication`, `SupportTicketing`), strictly isolating boundaries using Spring Boot 3 JPA entities.
+3. **Handling High-Concurrency WebSocket Channels**: Synchronizing messaging state across active groups without thread starvation required replacing basic in-memory message brokers with a dedicated STOMP-over-WebSocket protocol backed by optimized PostgreSQL query queues and optimistic locking (`@Version`) to resolve concurrent message sequence races.
